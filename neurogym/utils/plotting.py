@@ -68,7 +68,7 @@ def run_env(env, num_steps=200, num_trials=None, def_act=None, model=None):
     actions_end_of_trial = []
     gt = []
     perf = []
-    ob = env.reset()  # TODO: not saving this first observation
+    ob, _ = env.reset()  # TODO: not saving this first observation
     ob_cum_temp = ob
 
     if num_trials is not None:
@@ -86,7 +86,7 @@ def run_env(env, num_steps=200, num_trials=None, def_act=None, model=None):
             action = def_act
         else:
             action = env.action_space.sample()
-        ob, rew, done, info = env.step(action)
+        ob, rew, done, trunc, info = env.step(action)
         ob_cum_temp += ob
         ob_cum.append(ob_cum_temp.copy())
         if isinstance(info, list):
@@ -126,8 +126,8 @@ def run_env(env, num_steps=200, num_trials=None, def_act=None, model=None):
         states = None
 
     data = {
-        'ob': np.array(observations).astype(np.float),
-        'ob_cum': np.array(ob_cum).astype(np.float),
+        'ob': np.array(observations).astype(float),
+        'ob_cum': np.array(ob_cum).astype(float),
         'rewards': rewards,
         'actions': actions,
         'perf': perf,

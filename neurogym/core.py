@@ -211,9 +211,10 @@ class TrialEnv(BaseEnv):
             info['trial'] = trial
         if ob is OBNOW:
             ob = self.ob[self.t_ind]
-        return self.post_step(ob, reward, done, info)
+        ob, reward, done, info = self.post_step(ob, reward, done, info)
+        return ob, reward, done, False, info
 
-    def reset(self, seed=None, return_info=False, options=None, step_fn=None, no_step=False):
+    def reset(self, seed=None, return_info=False, options=None, step_fn=None, no_step=False, action=None):
         """Reset the environment.
 
         Args:
@@ -238,11 +239,13 @@ class TrialEnv(BaseEnv):
         self.action_space.seed(0)
         if no_step:
             return self.observation_space.sample()
+        if action is None:
+            action = self.action_space.sample()
         if step_fn is None:
-            ob, _, _, _ = self._top.step(self.action_space.sample())
+            ob, _, _, _, _ = self._top.step(action)
         else:
-            ob, _, _, _ = step_fn(self.action_space.sample())
-        return ob
+            ob, _, _, _, _ = step_fn(action)
+        return ob, {}
 
     def render(self, mode='human'):
         """
