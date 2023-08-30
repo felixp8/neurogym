@@ -214,7 +214,7 @@ class TrialEnv(BaseEnv):
         ob, reward, done, info = self.post_step(ob, reward, done, info)
         return ob, reward, done, False, info
 
-    def reset(self, seed=None, return_info=False, options=None, step_fn=None, no_step=False, action=None):
+    def reset(self, seed=None, return_info=False, options=None, step_fn=None, no_step=False, action=None, **kwargs):
         """Reset the environment.
 
         Args:
@@ -233,7 +233,8 @@ class TrialEnv(BaseEnv):
         self.num_tr = 0
         self.t = self.t_ind = 0
 
-        self._top.new_trial()
+        options = options or {}
+        trial = self._top.new_trial(**options)
 
         # have to also call step() to get the initial ob since some wrappers modify step() but not new_trial()
         self.action_space.seed(0)
@@ -245,7 +246,7 @@ class TrialEnv(BaseEnv):
             ob, _, _, _, _ = self._top.step(action)
         else:
             ob, _, _, _, _ = step_fn(action)
-        return ob, {}
+        return ob, trial
 
     def render(self, mode='human'):
         """
